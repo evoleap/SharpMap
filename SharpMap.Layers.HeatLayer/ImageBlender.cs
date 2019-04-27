@@ -347,13 +347,13 @@ namespace SharpMap.Layers
                                                 PerChannelProcessDelegate channelProcessFunction)
         {
             var dst = destImg; // new Bitmap(destImg);
-            var dstData = dst.LockBits(new Rectangle(destX, destY, destWidth, destHeight), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            var dstData = dst.LockBits(new Rectangle(destX, destY, destWidth, destHeight), ImageLockMode.ReadWrite, dst.PixelFormat);
             var dstStride = Math.Abs(dstData.Stride);
             var dstScan0 = dstData.Scan0;
             var dstBuffer = new byte[dstStride];
 
             var src = srcImg; //new Bitmap(srcImg);
-            var srcData = src.LockBits(new Rectangle(srcX, srcY, destWidth, destHeight), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            var srcData = src.LockBits(new Rectangle(srcX, srcY, destWidth, destHeight), ImageLockMode.ReadWrite, src.PixelFormat);
             var srcStride = Math.Abs(srcData.Stride);
             var srcScan0 = srcData.Scan0;
             var srcBuffer = new byte[srcStride];
@@ -396,13 +396,13 @@ namespace SharpMap.Layers
                                          RgbProcessDelegate rgbProcessFunction)
         {
             var dst = destImg; //new Bitmap(destImg);
-            var dstData = dst.LockBits(new Rectangle(destX, destY, destWidth, destHeight), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            var dstData = dst.LockBits(new Rectangle(destX, destY, destWidth, destHeight), ImageLockMode.ReadWrite, dst.PixelFormat);
             var dstStride = Math.Abs(dstData.Stride);
             var dstScan0 = dstData.Scan0;
             var dstBuffer = new byte[dstStride];
 
             var src = srcImg; //new Bitmap(srcImg);
-            var srcData = src.LockBits(new Rectangle(srcX, srcY, destWidth, destHeight), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            var srcData = src.LockBits(new Rectangle(srcX, srcY, destWidth, destHeight), ImageLockMode.ReadWrite, src.PixelFormat);
             var srcStride = Math.Abs(srcData.Stride);
             var srcScan0 = srcData.Scan0;
             var srcBuffer = new byte[srcStride];
