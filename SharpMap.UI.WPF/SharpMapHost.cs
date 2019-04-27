@@ -50,6 +50,10 @@ namespace SharpMap.UI.WPF
         public static readonly DependencyProperty MapLayersProperty =
             DependencyProperty.Register("MapLayers", typeof (ObservableCollection<ILayer>), typeof (SharpMapHost), new PropertyMetadata(SetMapLayersCallback));
 
+        // Dependency Property to store MapDecorations.
+        public static readonly DependencyProperty MapDecorationsProperty =
+            DependencyProperty.Register("MapDecorations", typeof(ObservableCollection<IMapDecoration>), typeof(SharpMapHost), new PropertyMetadata(SetMapDecorationsCallback));
+
         // Dependency Property store store BackgroundLayer.
         public static readonly DependencyProperty BackgroundLayerProperty =
             DependencyProperty.Register("BackgroundLayer", typeof (Layer), typeof (SharpMapHost), new PropertyMetadata(SetBackgroundLayerCallback));
@@ -96,11 +100,13 @@ namespace SharpMap.UI.WPF
             Child = _mapBox;
 
             MapLayers = new ObservableCollection<ILayer>();
-
-            var scaleBar = new ScaleBar{
-                Anchor = MapDecorationAnchor.LeftBottom
+            MapDecorations = new ObservableCollection<IMapDecoration>() {
+                new ScaleBar() {
+                    Anchor = MapDecorationAnchor.LeftBottom
+                }
             };
-            _mapBox.Map.Decorations.Add(scaleBar);
+
+            _mapBox.Map.Decorations.Add(MapDecorations[0]);
             _mapBox.PanOnClick = false;
 
             KeyDown += OnKeyDown;
@@ -117,6 +123,18 @@ namespace SharpMap.UI.WPF
             set
             {
                 SetValue(MapLayersProperty, value);
+            }
+        }
+
+        public ObservableCollection<IMapDecoration> MapDecorations
+        {
+            get
+            {
+                return (ObservableCollection<IMapDecoration>)GetValue(MapDecorationsProperty);
+            }
+            set
+            {
+                SetValue(MapDecorationsProperty, value);
             }
         }
 
@@ -238,6 +256,32 @@ namespace SharpMap.UI.WPF
             if (newLayers != null)
             {
                 newLayers.CollectionChanged += host.OnMapLayerChanged;
+            }
+        }
+
+        /// <summary>
+        /// Gets called when changes on MapDecorations
+        /// </summary>
+        /// <param name="sender">The sender object</param>
+        /// <param name="args">The event arguments</param>
+        private static void SetMapDecorationsCallback(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            var host = sender as SharpMapHost;
+            if (host == null)
+            {
+                return;
+            }
+
+            var oldDecorations = args.OldValue as ObservableCollection<IMapDecoration>;
+            if (oldDecorations != null)
+            {
+                oldDecorations.CollectionChanged -= host.OnMapDecorationChanged;
+            }
+
+            var newDecorations = args.NewValue as ObservableCollection<IMapDecoration>;
+            if (newDecorations != null)
+            {
+                newDecorations.CollectionChanged += host.OnMapDecorationChanged;
             }
         }
 
@@ -434,6 +478,53 @@ namespace SharpMap.UI.WPF
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     _mapBox.Map.Layers.Clear();
+                    break;
+            }
+
+            _mapBox.Refresh();
+        }
+
+        /// <summary>
+        /// Gets called when changes in MapDecorations
+        /// </summary>
+        /// <param name="sender">The sender object</param>
+        /// <param name="e">The event arguments</param>
+        private void OnMapDecorationChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    {
+                        var Decorations = e.NewItems;
+                        if (Decorations != null)
+                        {
+                            foreach (var Decoration in Decorations)
+                            {
+                                var castedDecoration = Decoration as IMapDecoration;
+                                if (castedDecoration != null)
+                                    _mapBox.Map.Decorations.Add(castedDecoration);
+                            }
+                        }
+                    }
+
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    {
+                        var Decorations = e.OldItems;
+                        if (Decorations != null)
+                        {
+                            foreach (var Decoration in Decorations)
+                            {
+                                var castedDecoration = Decoration as IMapDecoration;
+                                if (castedDecoration != null)
+                                    _mapBox.Map.Decorations.Remove(castedDecoration);
+                            }
+                        }
+                    }
+
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    _mapBox.Map.Decorations.Clear();
                     break;
             }
 
