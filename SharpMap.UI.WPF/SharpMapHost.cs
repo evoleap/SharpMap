@@ -86,6 +86,24 @@ namespace SharpMap.UI.WPF
 
         private Coordinate _currentMouseCoordinate;
 
+        static SharpMapHost()
+        {
+            BackgroundProperty.OverrideMetadata(typeof(SharpMapHost), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnBackgroundPropertyChanged)));
+        }
+
+        private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((SharpMapHost)d).OnBackgroundChanged((System.Windows.Media.Brush)e.OldValue, (System.Windows.Media.Brush)e.NewValue);
+        }
+
+        private void OnBackgroundChanged(System.Windows.Media.Brush oldValue, System.Windows.Media.Brush newValue)
+        {
+            if (newValue is System.Windows.Media.SolidColorBrush b)
+            {
+                _mapBox.BackColor = Color.FromArgb(b.Color.A, b.Color.R, b.Color.G, b.Color.B);
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SharpMapHost"/> class. 
         /// </summary>
