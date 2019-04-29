@@ -11,6 +11,7 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Name="Menu">
             <MenuItem Header="_File">
+                <MenuItem Header="Set custom tool" Click="MenuItem_Click_1" />
                 <MenuItem Header="_Exit" Click="MenuItem_OnClick"/>
             </MenuItem>
             <MenuItem Header="_Add Layer">

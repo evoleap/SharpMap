@@ -93,5 +93,16 @@ namespace WPFSamples
             }
             e.Handled = true;
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            WpfMap.CustomTool = new EmptyMapTool();
+            WpfMap.ActiveTool = SharpMap.Forms.MapBox.Tools.Custom;
+        }
     }
 }

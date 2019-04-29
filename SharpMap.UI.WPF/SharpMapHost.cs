@@ -40,6 +40,7 @@ namespace SharpMap.UI.WPF
 
     using KeyEventArgs = KeyEventArgs;
     using MouseEventArgs = MouseEventArgs;
+    using SharpMap.Forms.Tools;
 
     /// <summary>
     /// Extends WindowsFormsHost and encapsulates SharpMap specific code.
@@ -61,6 +62,10 @@ namespace SharpMap.UI.WPF
         // Dependency Property to store ActiveTool.
         public static readonly DependencyProperty ActiveToolProperty =
             DependencyProperty.Register("ActiveTool", typeof (MapBox.Tools), typeof (SharpMapHost), new PropertyMetadata(SetActiveToolCallback));
+
+        // Dependency Property to store CustomTool.
+        public static readonly DependencyProperty CustomToolProperty =
+            DependencyProperty.Register("CustomTool", typeof(IMapTool), typeof(SharpMapHost), new PropertyMetadata(SetCustomToolCallback));
 
         // Dependency Property to store MaxExtent.
         public static readonly DependencyProperty MaxExtentProperty =
@@ -177,6 +182,18 @@ namespace SharpMap.UI.WPF
             set
             {
                 SetValue(ActiveToolProperty, value);
+            }
+        }
+
+        public IMapTool CustomTool
+        {
+            get
+            {
+                return (IMapTool)GetValue(CustomToolProperty);
+            }
+            set
+            {
+                SetValue(CustomToolProperty, value);
             }
         }
 
@@ -342,6 +359,24 @@ namespace SharpMap.UI.WPF
             var mapBox = host._mapBox;
             var newTool = (MapBox.Tools) args.NewValue;
             mapBox.ActiveTool = newTool;
+        }
+
+        /// <summary>
+        /// Gets called when changes on CustomTool
+        /// </summary>
+        /// <param name="sender">The sender object</param>
+        /// <param name="args">The event arguments</param>
+        private static void SetCustomToolCallback(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            var host = sender as SharpMapHost;
+            if (host == null)
+            {
+                return;
+            }
+
+            var mapBox = host._mapBox;
+            var newTool = (IMapTool)args.NewValue;
+            mapBox.CustomTool = newTool;
         }
 
         /// <summary>
@@ -578,6 +613,18 @@ namespace SharpMap.UI.WPF
 
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public System.Windows.Point WorldToImage(Coordinate p)
+        {
+            var drawingPoint = _mapBox.WorldToImage(p);
+            return new System.Windows.Point(drawingPoint.X, drawingPoint.Y);
+        }
+        public Coordinate ImageToWorld(System.Windows.Point p)
+        {
+            var drawingPoint = new PointF((float)p.X, (float)p.Y);
+            return _mapBox.ImageToWorld(drawingPoint);
+        }
+
 
     }
 }

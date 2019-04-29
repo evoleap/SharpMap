@@ -1246,6 +1246,14 @@ namespace SharpMap.Forms
         //    }
         //}
 
+        public PointF WorldToImage(Coordinate p)
+        {
+            return _map.WorldToImage(p);
+        }
+        public Coordinate ImageToWorld(PointF p)
+        {
+            return _map.ImageToWorld(p);
+        }
 
         private void SetCursor()
         {
@@ -1677,7 +1685,7 @@ namespace SharpMap.Forms
                     MouseDrag(p, e);
 
                 //Pan can be if we have ActiveTool Pan and not doing a ShiftButtonZoom-Operation
-                bool isPanOperation = _activeTool == Tools.Pan &&
+                bool isPanOperation = (_activeTool == Tools.Pan) &&
                                       !(_shiftButtonDragRectangleZoom &&
                                         (ModifierKeys & Keys.Shift) != Keys.None);
 
@@ -1689,6 +1697,11 @@ namespace SharpMap.Forms
                     isPanOperation = true;
                 }
 
+                //Pan can also be if we a custom tool is used but did not handle the mouse move.
+                if (UseCurrentTool)
+                {
+                    isPanOperation = true;
+                }
 
                 //Zoom in or Zoom Out
                 bool isZoomOperation = _activeTool == Tools.ZoomIn || _activeTool == Tools.ZoomOut;
@@ -2004,7 +2017,7 @@ namespace SharpMap.Forms
                         }
                     }
                     else if (_activeTool == Tools.Pan || _activeTool == Tools.ZoomIn || _activeTool == Tools.ZoomOut ||
-                             _activeTool == Tools.DrawLine || _activeTool == Tools.DrawPolygon)
+                             _activeTool == Tools.DrawLine || _activeTool == Tools.DrawPolygon || UseCurrentTool)
                     {
                         var image = _miRenderer.ImageValue;
                         var imageEnvelope = _miRenderer.ImageEnvelope;
@@ -2217,7 +2230,7 @@ namespace SharpMap.Forms
                     }
                         
                 }
-                else if ((_activeTool == Tools.Pan &&
+                else if (((_activeTool == Tools.Pan || UseCurrentTool) &&
                           !(_shiftButtonDragRectangleZoom && (ModifierKeys & Keys.Shift) != Keys.None)) ||
                          (e.Button == MouseButtons.Left && _dragging &&
                           (_activeTool == Tools.DrawLine || _activeTool == Tools.DrawPolygon)))
