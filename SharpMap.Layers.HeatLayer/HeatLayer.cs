@@ -516,11 +516,13 @@ namespace SharpMap.Layers
                 var posF = map.WorldToImage(c);
                 var pos = Point.Round(posF);
                 //var pos = Point.Round(PointF.Subtract(posF, halfSize));
-                pos = new Point(Math.Min(Math.Max(0, pos.X), image.Width), Math.Min(Math.Max(0, pos.Y), image.Height));
-                using (var tmpDot = ApplyHeatValueToImage(dot, heatValue))
+                if (pos.X >= 0 && pos.Y >= 0 && pos.X < image.Width - size.Width && pos.Y < image.Height - size.Height)
                 {
-                    ImageBlender.BlendImages(image, pos.X, pos.Y, size.Width, size.Height,
-                                             tmpDot, 0, 0, BlendOperation.BlendMultiply);
+                    using (var tmpDot = ApplyHeatValueToImage(dot, heatValue))
+                    {
+                        ImageBlender.BlendImages(image, pos.X, pos.Y, size.Width, size.Height,
+                                                 tmpDot, 0, 0, BlendOperation.BlendMultiply);
+                    }
                 }
             }
         }
