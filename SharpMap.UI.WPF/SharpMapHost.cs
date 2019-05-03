@@ -584,6 +584,8 @@ namespace SharpMap.UI.WPF
             _mapBox.Refresh();
         }
 
+        public Envelope MapEnvelope => _mapBox.Map.Envelope;
+
         public void ZoomToExtents()
         {
             _mapBox.Map.ZoomToExtents();
