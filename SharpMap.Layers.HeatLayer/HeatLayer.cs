@@ -367,7 +367,7 @@ namespace SharpMap.Layers
         private static Bitmap[] GenerateDots()
         {
             var res = new Bitmap[32];
-            var size = 6;
+            var size = 12;
             for (var i = 0; i < 32; i++)
             {
                 var bmp = new Bitmap(size, size, PixelFormat.Format24bppRgb);
